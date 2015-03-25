@@ -28,23 +28,38 @@ import javax.json.JsonValue;
 @Path("/products")
 public class ProductResource {
 	
+	public static final String JSON_FILE="/Users/UITLEEN/Desktop/Webtech3/Products.json";
+	
 	
 	
 	@GET
 	@Produces({"text/html"})
-	public String getProductsHTML() {
+	public String getProductsHTML() throws IOException {
 		String htmlString = "<html><body>";
 		try {
 			JAXBContext jaxbContext1 = JAXBContext.newInstance(ProductsXML.class);
 			Unmarshaller jaxbUnmarshaller = jaxbContext1.createUnmarshaller();
-			File XMLfile = new File("/Users/UITLEEN/Desktop/Webtech3/Products.json");
-			ProductsXML productsXML = (ProductsXML)jaxbUnmarshaller.unmarshal(XMLfile);
+			InputStream fis = new FileInputStream(JSON_FILE);
+			JsonReader jsonReader = Json.createReader(fis);
+			JsonObject jsonObject = jsonReader.readObject();
+			ProductsXML productsXML = (ProductsXML)jaxbUnmarshaller.unmarshal(fis);
+			jsonReader.close();
+			fis.close();
+//			File XMLfile = new File("/Users/UITLEEN/Desktop/Webtech3/Products.json");
+			
+			 Product emp = new Product();
+	         
+		        emp.setId(jsonObject.getInt("id"));
+		        emp.setPrice(jsonObject.getDouble("price"));
+		        emp.setName(jsonObject.getString("name"));
+		        emp.setBrand(jsonObject.getString("brand"));
+		        emp.setDescription(jsonObject.getString("description"));
+			
 			ArrayList<Product> listOfProducts = productsXML.getProducts();
 			
 			for(Product product : listOfProducts) {
-				htmlString += "<b>ShortName : " + product.getShortname() + "</b><br>";
+				htmlString += "<b>name : " + product.getName() + "</b><br>";
 				htmlString += "Id : " + product.getId() + "<br>";
-				htmlString += "SKU : " + product.getSku() + "<br>";
 				htmlString += "Brand : " + product.getBrand() + "<br>";
 				htmlString += "Description : " + product.getDescription() + "<br>";
 				htmlString += "Price : " + product.getPrice() + "<br>";
@@ -69,7 +84,7 @@ public class ProductResource {
 			ArrayList<Product> listOfProducts = productsXML.getProducts();
 			
 			for(Product product : listOfProducts) {
-				jsonString += "{\"shortname\" : \"" + product.getShortname() + "\",";
+				jsonString += "{\"name\" : \"" + product.getname() + "\",";
 				jsonString += "\"id\" : " + product.getId() + ",";
 				jsonString += "\"sku\" : \"" + product.getSku() + "\",";
 				jsonString += "\"brand\" : \"" + product.getBrand() + "\",";
@@ -100,9 +115,9 @@ public class ProductResource {
 	}
 
 	@GET
-	@Path("/{shortname}")
+	@Path("/{name}")
 	@Produces({"application/json"})
-	public String getProductJSON(@PathParam("shortname") String shortname) {
+	public String getProductJSON(@PathParam("name") String name) {
 		String jsonString = "";
 		try {
 			// get all products
@@ -112,10 +127,10 @@ public class ProductResource {
 			ProductsXML productsXML = (ProductsXML)jaxbUnmarshaller.unmarshal(XMLfile);
 			ArrayList<Product> listOfProducts = productsXML.getProducts();
 			
-			// look for the product, using the shortname
+			// look for the product, using the name
 			for(Product product : listOfProducts) {
-				if(shortname.equalsIgnoreCase(product.getShortname())) {
-					jsonString += "{\"shortname\" : \"" + product.getShortname() + "\",";
+				if(name.equalsIgnoreCase(product.getname())) {
+					jsonString += "{\"name\" : \"" + product.getname() + "\",";
 					jsonString += "\"id\" : " + product.getId() + ",";
 					jsonString += "\"sku\" : \"" + product.getSku() + "\",";
 					jsonString += "\"brand\" : \"" + product.getBrand() + "\",";
@@ -131,9 +146,9 @@ public class ProductResource {
 	}
 	
 	@GET
-	@Path("/{shortname}")
+	@Path("/{name}")
 	@Produces({"text/json"})
-	public String getProductXML(@PathParam("shortname") String shortname) {
+	public String getProductXML(@PathParam("name") String name) {
 		String xmlString = "";
 		try {
 			// get all products
@@ -143,9 +158,9 @@ public class ProductResource {
 			ProductsXML productsXML = (ProductsXML)jaxbUnmarshaller.unmarshal(XMLfile);
 			ArrayList<Product> listOfProducts = productsXML.getProducts();
 			
-			// look for the product, using the shortname
+			// look for the product, using the name
 			for(Product product : listOfProducts) {
-				if(shortname.equalsIgnoreCase(product.getShortname())) {
+				if(name.equalsIgnoreCase(product.getname())) {
 					JAXBContext jaxbContext2 = JAXBContext.newInstance(Product.class);
 					Marshaller jaxbMarshaller = jaxbContext2.createMarshaller();
 					StringWriter sw = new StringWriter();
@@ -173,7 +188,7 @@ public class ProductResource {
         	<description>DESCRIPTION</description>
         	<id>123456</id>
         	<price>20.0</price>
-        	<shortname>SHORTNAME</shortname>
+        	<name>name</name>
         	<sku>SKU</sku>
 		 </product>
 		 */

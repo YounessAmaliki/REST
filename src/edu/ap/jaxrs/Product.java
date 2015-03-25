@@ -9,7 +9,7 @@ public class Product {
 	private String name;
 	private String brand;
 	private String description;
-	private double price;
+	private String price;
 	
 	public int getId() {
 		return id;
@@ -36,10 +36,10 @@ public class Product {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public double getPrice() {
+	public String getPrice() {
 		return price;
 	}
-	public void setPrice(double price) {
+	public void setPrice(String price) {
 		this.price = price;
 	} 
 }
