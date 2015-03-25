@@ -1,11 +1,25 @@
 package edu.ap.jaxrs;
 
 import java.io.*;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+ 
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import javax.json.JsonValue;
 import java.util.*;
 
 import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.*;
 import javax.xml.bind.*;
+import java.util.ArrayList;
+import java.util.List;
+
+
 
 @RequestScoped
 @Path("/products")
@@ -18,7 +32,7 @@ public class ProductResource {
 		try {
 			JAXBContext jaxbContext1 = JAXBContext.newInstance(ProductsXML.class);
 			Unmarshaller jaxbUnmarshaller = jaxbContext1.createUnmarshaller();
-			File XMLfile = new File("/Users/UITLEEN/Desktop/Webtech3/Products.json");
+			InputStream XMLfile = new FileInputStream("/Users/UITLEEN/Desktop/Webtech3/Products.json");
 			ProductsXML productsXML = (ProductsXML)jaxbUnmarshaller.unmarshal(XMLfile);
 			ArrayList<Product> listOfProducts = productsXML.getProducts();
 			
@@ -113,7 +127,7 @@ public class ProductResource {
 	
 	@GET
 	@Path("/{shortname}")
-	@Produces({"text/xml"})
+	@Produces({"text/json"})
 	public String getProductXML(@PathParam("shortname") String shortname) {
 		String xmlString = "";
 		try {
@@ -143,7 +157,7 @@ public class ProductResource {
 	}
 	
 	@POST
-	@Consumes({"text/xml"})
+	@Consumes({"text/json"})
 	public void processFromXML(String productXML) {
 		
 		/* newProductXML should look like this :
